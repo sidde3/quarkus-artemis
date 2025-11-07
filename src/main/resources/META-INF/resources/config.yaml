@@ -1,0 +1,85 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  labels:
+    ActiveMQArtemis: NonProdEnv
+    ActiveMQArtemisEnv: DEV
+  name: amq-dev
+  namespace: amq-dev
+spec:
+  acceptors:
+    - connectionsAllowed: 1000
+      name: artemis
+      port: 61617
+      protocols: 'CORE,AMQP,MQTT,STOMP'
+      sslEnabled: true
+      sslSecret: amq-ssl-secret
+  adminPassword: xxxxxx
+  adminUser: xxxxxxxxx
+  brokerProperties:
+    - connectorConfigurations.artemis.params.verifyHost=false
+    - securityRoles."mops.address.activemq.management.*".manager.view=true
+    - securityRoles."mops.address.activemq.management.*".manager.edit=true
+    - securityRoles."mops.#".ML-IT-EP-Middleware-Support.view=true
+    - securityRoles."mops.#".ML-IT-EP-Middleware-Support.edit=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.manage=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.createNonDurableQueue=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.createAddress=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.deleteAddress=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.deleteNonDurableQueue=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.send=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.consume=true
+    - securityRoles."#".ML-IT-EP-Middleware-Support.delete=true
+  console:
+    expose: true
+    exposeMode: route
+    sslEnabled: true
+    sslSecret: amq-ssl-secret
+  deploymentPlan:
+    size: 3
+    persistenceEnabled: true
+    requireLogin: true
+    resources:
+      limits:
+        cpu: 1
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 2Gi
+    messageMigration: false
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: ActiveMQArtemis
+                  operator: In
+                  values:
+                    - NonProdEnv
+    extraMounts:
+      configMaps:
+        - amq-config
+    managementRBACEnabled: true
+    journalType: nio
+    enableMetricsPlugin: true
+    jolokiaAgentEnabled: false
+    clustered: true
+    image: placeholder
+    storage:
+      size: 10G
+  env:
+    - name: JAVA_ARGS_APPEND
+      value: '-Dhawtio.roles=* -Djavax.management.builder.initial=org.apache.activemq.artemis.core.server.management.ArtemisRbacMBeanServerBuilder -Dlog4j2.configurationFile=/amq/extra/configmaps/amq-config/log4j2.properties -Djava.security.auth.login.config=/amq/extra/configmaps/amq-config/login.config -Djavax.net.ssl.trustStore=/etc/amq-ssl-secret-volume/client.ts -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true -Djavax.net.ssl.trustStorePassword=xxxx'
+  resourceTemplates:
+    - patch:
+        kind: StatefulSet
+        spec:
+          template:
+            spec:
+              initContainers:
+                - args:
+                    - '-c'
+                    - '/opt/amq/bin/launch.sh && /opt/amq-broker/script/default.sh; echo "Empty management.xml";echo "<management-context xmlns=\"http://activemq.apache.org/schema\" />" > /amq/init/config/amq-broker/etc/management.xml'
+                  name: amq-dev-container-init
+      selector:
+        kind: StatefulSet
