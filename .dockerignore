@@ -1,0 +1,49 @@
+*
+!target/*-runner
+!target/*-runner.jar
+!target/lib/*
+!target/quarkus-app/*
+
+# === Build & Maven Output ===
+/target/
+/build/
+/out/
+!.mvn/wrapper/maven-wrapper.jar
+
+# === IDE Files ===
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VSCode
+.vscode/
+
+# === OS/System Files ===
+.DS_Store
+Thumbs.db
+*.log
+
+# === Quarkus Specific ===
+.quarkus/
+.native/
+*.native
+*.jar.original
+
+# === Docker / Container Build Output ===
+*.tar
+*.dockerfile-backup
+
+# === Generated Files ===
+*.class
+*.swp
+
+# === Env / Secrets (if any) ===
+*.env
+application.properties.local
