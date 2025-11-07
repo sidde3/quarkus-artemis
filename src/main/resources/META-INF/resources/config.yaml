@@ -13,28 +13,28 @@ spec:
       port: 61617
       protocols: 'CORE,AMQP,MQTT,STOMP'
       sslEnabled: true
-      sslSecret: amq-ssl-secret
+      sslSecret: artemis-tls-secret
   adminPassword: xxxxxx
   adminUser: xxxxxxxxx
   brokerProperties:
     - connectorConfigurations.artemis.params.verifyHost=false
     - securityRoles."mops.address.activemq.management.*".manager.view=true
     - securityRoles."mops.address.activemq.management.*".manager.edit=true
-    - securityRoles."mops.#".ML-IT-EP-Middleware-Support.view=true
-    - securityRoles."mops.#".ML-IT-EP-Middleware-Support.edit=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.manage=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.createNonDurableQueue=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.createAddress=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.deleteAddress=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.deleteNonDurableQueue=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.send=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.consume=true
-    - securityRoles."#".ML-IT-EP-Middleware-Support.delete=true
+    - securityRoles."mops.#".Support.view=true
+    - securityRoles."mops.#".Support.edit=true
+    - securityRoles."#".Support.manage=true
+    - securityRoles."#".Support.createNonDurableQueue=true
+    - securityRoles."#".Support.createAddress=true
+    - securityRoles."#".Support.deleteAddress=true
+    - securityRoles."#".Support.deleteNonDurableQueue=true
+    - securityRoles."#".Support.send=true
+    - securityRoles."#".Support.consume=true
+    - securityRoles."#".Support.delete=true
   console:
     expose: true
     exposeMode: route
     sslEnabled: true
-    sslSecret: amq-ssl-secret
+    sslSecret: artemis-tls-secret
   deploymentPlan:
     size: 3
     persistenceEnabled: true
